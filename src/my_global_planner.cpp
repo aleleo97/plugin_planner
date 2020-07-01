@@ -21,7 +21,8 @@
    
    void MyGlobalPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
      if(!initialized_){
-       printf("cacca");
+       printf("Planner inizialised");
+       ROS_INFO("This planner has been initialized");
        costmap_ros_ = costmap_ros;
        costmap_ = costmap_ros_->getCostmap();
  
@@ -101,7 +102,7 @@
          target_x = start_x;
          target_y = start_y;
          target_yaw = start_yaw;
-         ROS_WARN("The carrot planner could not find a valid plan for this goal");
+         ROS_WARN("The planner could not find a valid plan for this goal");
          break;
        }
        target_x = start_x + scale * diff_x;
