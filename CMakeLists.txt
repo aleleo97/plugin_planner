@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  costmap_2d
+  base_local_planner
 )
 
 ## System dependencies are found with CMake's conventions
@@ -114,10 +116,6 @@ catkin_package(
 ## Build ##
 ###########
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
@@ -204,6 +202,6 @@ add_library(global_planner_lib src/my_global_planner.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
-
+#target_link_libraries(<project_target> ${catkin_LIBRARIES} )
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

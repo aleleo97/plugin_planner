@@ -5,7 +5,7 @@
  #include <tf2/convert.h>
  #include <tf2/utils.h>
  #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
- 
+ #include <nav_msgs/Path.h>
  //register this planner as a BaseGlobalPlanner plugin
  PLUGINLIB_EXPORT_CLASS(my_global_planner::MyGlobalPlanner, nav_core::BaseGlobalPlanner)
  
@@ -18,7 +18,17 @@
    : costmap_ros_(NULL), initialized_(false){
      initialize(name, costmap_ros);
    }
-   
+
+
+   void MyGlobalPlanner::pathCallback(const nav_msgs::Path& msg){
+       
+       ROS_INFO("proxy called");
+       printf("proxy called");
+       proxy_flag = true;
+
+   }
+
+
    void MyGlobalPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
      if(!initialized_){
        printf("Planner inizialised");
@@ -29,30 +39,16 @@
        ros::NodeHandle private_nh("~/" + name);
        private_nh.param("step_size", step_size_, costmap_->getResolution());
        private_nh.param("min_dist_from_robot", min_dist_from_robot_, 0.10);
-       world_model_ = new base_local_planner::CostmapModel(*costmap_); 
- 
+       //world_model_ = new base_local_planner::CostmapModel(*costmap_); 
+       //ros::Subscriber sub = private_nh.subscribe("path_proxy", 1000, &MyGlobalPlanner::pathCallback);
        initialized_ = true;
+       proxy_flag = false;
      }
      else
        ROS_WARN("This planner has already been initialized... doing nothing");
    }
  
-   //we need to take the footprint of the robot into account when we calculate cost to obstacles
-   double MyGlobalPlanner::footprintCost(double x_i, double y_i, double theta_i){
-     if(!initialized_){
-       ROS_ERROR("The planner has not been initialized, please call initialize() to use the planner");
-       return -1.0;
-     }
- 
-     std::vector<geometry_msgs::Point> footprint = costmap_ros_->getRobotFootprint();
-     //if we have no footprint... do nothing
-     if(footprint.size() < 3)
-       return -1.0;
- 
-     //check if the footprint is legal
-     double footprint_cost = world_model_->footprintCost(x_i, y_i, theta_i, footprint);
-     return footprint_cost;
-   }
+
  
  
    bool MyGlobalPlanner::makePlan(const geometry_msgs::PoseStamped& start, 
@@ -64,15 +60,10 @@
      }
  
      ROS_DEBUG("Got a start: %.2f, %.2f, and a goal: %.2f, %.2f", start.pose.position.x, start.pose.position.y, goal.pose.position.x, goal.pose.position.y);
- 
+     ROS_INFO(proxy_flag ? "true" : "false");
+     printf(proxy_flag ? "true" : "false");
      plan.clear();
      costmap_ = costmap_ros_->getCostmap();
- 
-     if(goal.header.frame_id != costmap_ros_->getGlobalFrameID()){
-       ROS_ERROR("This planner as configured will only accept goals in the %s frame, but a goal was sent in the %s frame.", 
-           costmap_ros_->getGlobalFrameID().c_str(), goal.header.frame_id.c_str());
-       return false;
-     }
  
      const double start_yaw = tf2::getYaw(start.pose.orientation);
      const double goal_yaw = tf2::getYaw(goal.pose.orientation);
@@ -95,27 +86,7 @@
      double scale = 1.0;
      double dScale = 0.01;
  
-     while(!done)
-     {
-       if(scale < 0)
-       {
-         target_x = start_x;
-         target_y = start_y;
-         target_yaw = start_yaw;
-         ROS_WARN("The planner could not find a valid plan for this goal");
-         break;
-       }
-       target_x = start_x + scale * diff_x;
-       target_y = start_y + scale * diff_y;
-       target_yaw = angles::normalize_angle(start_yaw + scale * diff_yaw);
-       
-       double footprint_cost = footprintCost(target_x, target_y, target_yaw);
-       if(footprint_cost >= 0)
-       {
-           done = true;
-       }
-       scale -=dScale;
-     }
+     target_yaw = angles::normalize_angle(start_yaw + scale * diff_yaw);
  
      plan.push_back(start);
      geometry_msgs::PoseStamped new_goal = goal;
