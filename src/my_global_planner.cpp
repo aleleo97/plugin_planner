@@ -9,6 +9,16 @@
  //register this planner as a BaseGlobalPlanner plugin
  PLUGINLIB_EXPORT_CLASS(my_global_planner::MyGlobalPlanner, nav_core::BaseGlobalPlanner)
  
+ bool gProxyFlag ;
+
+   void pathCallback(const nav_msgs::Path& msg){
+       
+       ROS_INFO("proxy called");
+       printf("proxy called");
+       gProxyFlag = true;
+
+   }
+
  namespace my_global_planner {
  
    MyGlobalPlanner::MyGlobalPlanner()
@@ -18,16 +28,6 @@
    : costmap_ros_(NULL), initialized_(false){
      initialize(name, costmap_ros);
    }
-
-
-   void MyGlobalPlanner::pathCallback(const nav_msgs::Path& msg){
-       
-       ROS_INFO("proxy called");
-       printf("proxy called");
-       proxy_flag = true;
-
-   }
-
 
    void MyGlobalPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
      if(!initialized_){
@@ -40,9 +40,10 @@
        private_nh.param("step_size", step_size_, costmap_->getResolution());
        private_nh.param("min_dist_from_robot", min_dist_from_robot_, 0.10);
        //world_model_ = new base_local_planner::CostmapModel(*costmap_); 
-       //ros::Subscriber sub = private_nh.subscribe("path_proxy", 1000, &MyGlobalPlanner::pathCallback);
+
+       ros::Subscriber sub = private_nh.subscribe("path_proxy", 1000, pathCallback);
        initialized_ = true;
-       proxy_flag = false;
+       gProxyFlag = false;
      }
      else
        ROS_WARN("This planner has already been initialized... doing nothing");
@@ -60,8 +61,8 @@
      }
  
      ROS_DEBUG("Got a start: %.2f, %.2f, and a goal: %.2f, %.2f", start.pose.position.x, start.pose.position.y, goal.pose.position.x, goal.pose.position.y);
-     ROS_INFO(proxy_flag ? "true" : "false");
-     printf(proxy_flag ? "true" : "false");
+     ROS_INFO(gProxyFlag ? "true" : "false");
+     //printf( gProxyFlag ? "true" : "false");//
      plan.clear();
      costmap_ = costmap_ros_->getCostmap();
  
@@ -85,7 +86,12 @@
      bool done = false;
      double scale = 1.0;
      double dScale = 0.01;
- 
+
+     while(gProxyFlag == false){
+         ROS_INFO("Waiting a valid plan");
+         ROS_INFO(gProxyFlag ? "true" : "false");
+     }
+     ROS_INFO(gProxyFlag ? "true" : "false");
      target_yaw = angles::normalize_angle(start_yaw + scale * diff_yaw);
  
      plan.push_back(start);

@@ -22,7 +22,7 @@
        MyGlobalPlanner();
        MyGlobalPlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
 
-       void pathCallback(const nav_msgs::Path& msg);
+       //void pathCallback(const nav_msgs::Path& msg);
 
        void initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
  
@@ -34,7 +34,6 @@
        double step_size_, min_dist_from_robot_;
        costmap_2d::Costmap2D* costmap_;
        base_local_planner::WorldModel* world_model_; 
-       bool proxy_flag;
 
        double footprintCost(double x_i, double y_i, double theta_i);
  
