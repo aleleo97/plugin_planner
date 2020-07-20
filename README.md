@@ -14,15 +14,23 @@ How to use:
 - a GAZEBO simulation fot the navigation process (you can find that inside the other project) 
 
 # How to use:
-- launch a gazebo simulation with a robot and a map 
-&&roslaunch husky_navigation husky_playpen.launch
+- launch a gazebo simulation with a robot and a map
+```
+roslaunch husky_navigation husky_playpen.launch
+```
 - launch your mapping algorithm (or use directly the map done by the file .yaml and use it vith the launch file of amcl.launch)
 - launch your proxy service that pub the topic 
-&&rosrun proxy_nav planner.py
+```
+rosrun proxy_nav planner.py
+```
 - launch move_base simulation with this plugin as a global plunner 
-&&roslaunch husky_navigation amcl_demo.launch
+```
+roslaunch husky_navigation amcl_demo.launch
+```
 - USE rviz to provide a init pose and a goal pose
-&&rosrun rviz rviz
+```
+rosrun rviz rviz
+```
 # Comments:
 this project wants to give the opportunity to edit the global planner that is entirly written en c++ with a pythone code.
 This allows you to comunicate with a python proxy that can generate the trajectory.
