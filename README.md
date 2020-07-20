@@ -1,6 +1,6 @@
 # plugin_planner
 Requirements: 
-<<<<<<< HEAD
+
 - ROS installed correctly
 - a publisher in path_proxy 
 - move_base node correctly installed \
@@ -15,7 +15,7 @@ How to use:
 
 # How to use:
 - launch a gazebo simulation with a robot and a map 
-- launch your mapping algorithm 
+- launch your mapping algorithm (or use directly the map done by the file .yaml and use it vith the launch file of amcl.launch)
 - launch your proxy service that pub the topic 
 - launch move_base simulation with this plugin as a global plunner 
 - USE rviz to provide a init pose and a goal pose
