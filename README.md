@@ -1,13 +1,5 @@
 # plugin_planner
 Requirements: 
-
-- ROS installed correctly
-- a publisher in path_proxy 
-- move_base node correctly installed \
-How to use:
-- launch a gazebo simulation
-- launch your proxy that pub the topic 
-- launch move_base simulation withh this plugin as a global plunner 
 =======
 - ROS environment installed correctly
 - a server that provide a path inside the topic path_proxy (there is the project related to this that will do this)
@@ -36,4 +28,5 @@ this project wants to give the opportunity to edit the global planner that is en
 This allows you to comunicate with a python proxy that can generate the trajectory.
 From an optimization point it can be useless to use python but the python code allows us much more freedom to code.
 
->>>>>>> a5d088f851f4a33b5def6fcd657173f117b6035c
+# Problems 
+The tf class cannot be imported in Python3 in Ros developement studio so all the tf transformation is commented.
